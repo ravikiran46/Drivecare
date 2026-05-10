@@ -163,9 +163,9 @@ const veriftotp = async (req, res) => {
       role: user.role,
     },
     key,
+    { expiresIn: "7d" },
   );
 
-  console.log(token);
   res.cookie("token", token);
   await users.updateOne(
     { email: email },
@@ -177,7 +177,10 @@ const veriftotp = async (req, res) => {
 const handlechangeuserdetails = async (req, res) => {};
 
 const handlelogout = (req, res) => {
-  return res.status(200).clearCookie("token");
+  return res
+    .status(200)
+    .clearCookie("token")
+    .json({ msg: "Logged out successfuly" });
 };
 
 module.exports = {

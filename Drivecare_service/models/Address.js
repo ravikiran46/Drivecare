@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Address_Schema = mongoose.Schema(
   {
     user_Id: {
-      type: mongoose.mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
     flat_no: {
@@ -22,7 +22,7 @@ const Address_Schema = mongoose.Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("address", Address_Schema);
