@@ -3,7 +3,7 @@ const service = require("../models/Services");
 const post_service = async (req, res) => {
   const { service_name, price, category, details, imgURL } = req.body;
   if (!service_name || !price || !category || !details || !imgURL) {
-    return res.status(203).json({ msg: "All feilds are required!" });
+    return res.status(400).json({ msg: "All fields are required!" });
   }
   try {
     let value = Number(price);
@@ -20,7 +20,7 @@ const post_service = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.stauts(500).json({ msg: "An error occured try after sometime" });
+    return res.status(500).json({ msg: "An error occured try after sometime" });
   }
 };
 
@@ -51,14 +51,14 @@ const update_service = async (req, res) => {
   const { id } = req.params;
   const { service_name, price, category, details, imgURL } = req.body;
   if (!id) {
-    return res.status(203).json({ msg: "ID must be provided" });
+    return res.status(400).json({ msg: "ID must be provided" });
   }
   const updatedfeilds = {};
   if (service_name) updatedfeilds.service_name = service_name;
   if (price) updatedfeilds.price = price;
   if (category) updatedfeilds.category = category;
   if (details) updatedfeilds.details = details;
-  if (details) updatedfeilds.details = details;
+  if (imgURL) updatedfeilds.imgURL = imgURL;
 
   if (Object.keys(updatedfeilds).length === 0) {
     return res.status(400).json({ message: "No fields to update" });

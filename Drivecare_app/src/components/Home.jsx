@@ -7,62 +7,68 @@ const Content = () => {
         {/* Left Side: Text and CTA */}
         <div className="space-y-6 lg:w-1/2">
           <h1 className="text-5xl font-bold leading-tight">
-            Deposit <span className="text-gray-300">Crypto</span> <br /> Earn
-            Fast
+            Your Vehicle <span className="text-violet-400">Deserves</span>{" "}
+            <br /> The Best Care
           </h1>
           <p className="text-lg text-gray-400">
-            Buy and sell 100+ cryptocurrencies with 20+ fiat currencies using
-            Net Banking or your Credit/Debit Card.
+            Book car and bike services in Bangalore — washing, detailing, full
+            servicing and more. Doorstep service at your parking spot.
           </p>
           <br />
           <Link
-            to={"/login"}
+            to={"/Login"}
             className="px-6 py-3 mt-4 text-white transition rounded-full bg-violet-500 hover:bg-violet-600"
           >
-            Get Started &rarr;
+            Book a Service &rarr;
           </Link>
 
           {/* Benefits Section */}
           <div className="flex mt-8 space-x-12">
             <div className="text-center">
-              <p className="text-4xl font-bold">10%</p>
-              <p className="text-sm text-gray-400">Discount on Crypto</p>
+              <p className="text-4xl font-bold">500+</p>
+              <p className="text-sm text-gray-400">Happy Customers</p>
             </div>
             <div className="text-center">
-              <p className="text-4xl font-bold">14%</p>
-              <p className="text-sm text-gray-400">Growth Estimate</p>
+              <p className="text-4xl font-bold">50+</p>
+              <p className="text-sm text-gray-400">Services Available</p>
+            </div>
+            <div className="text-center">
+              <p className="text-4xl font-bold">4.8</p>
+              <p className="text-sm text-gray-400">Average Rating</p>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Crypto Card */}
+        {/* Right Side: Feature Cards */}
         <div className="relative mt-12 lg:w-1/2 lg:mt-0">
-          {/* Crypto Card */}
+          {/* Service Card */}
           <div className="flex items-center p-6 space-x-4 bg-gray-900 rounded-lg shadow-lg">
-            <div className="p-4 bg-gray-800 rounded-full"></div>
-            <div>
-              <p className="font-semibold">Ethereum CY</p>
-              <p className="text-sm text-gray-400">8.82041 ETH</p>
+            <div className="flex items-center justify-center w-12 h-12 text-xl bg-violet-600 rounded-full">
+              🚗
             </div>
-            <div className="ml-auto text-right">
-              <p className="text-red-500">- $1356 (14%)</p>
+            <div>
+              <p className="font-semibold">Doorstep Service</p>
+              <p className="text-sm text-gray-400">
+                We come to your parking spot
+              </p>
             </div>
           </div>
 
-          {/* Chat Box */}
+          {/* Testimonial */}
           <div className="absolute right-0 p-4 text-white rounded-lg shadow-lg top-36 bg-violet-500">
             <p>
-              You are all doing an incredible job, LOVE IT. Keep the good work
-              🎉👏
+              &quot;My car looks brand new after every wash. Super convenient
+              doorstep service!&quot;
             </p>
-            <p className="mt-2 font-semibold">Brandon Wrangler</p>
-            <p className="text-sm text-gray-200">Crypto Buyer</p>
+            <p className="mt-2 font-semibold">Rahul K.</p>
+            <p className="text-sm text-gray-200">Bangalore</p>
           </div>
 
-          {/* Ask Anything Box */}
-          <div className="flex items-center p-4 mt-48 space-x-4 bg-gray-800 rounded-full ">
-            <span className="text-gray-400">Ask Anything...</span>
-            <button className="text-white hover:text-violet-500">😊</button>
+          {/* Feature Card */}
+          <div className="flex items-center p-4 mt-48 space-x-4 bg-gray-800 rounded-full">
+            <span className="text-gray-400">
+              Cars &bull; Bikes &bull; Washing &bull; Detailing &bull; Servicing
+            </span>
           </div>
         </div>
       </div>

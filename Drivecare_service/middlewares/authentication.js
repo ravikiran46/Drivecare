@@ -12,7 +12,9 @@ async function verify(req, res, next) {
 
   try {
     const verifieduser = jwt.verify(token, process.env.KEY);
-    if (!verifieduser) res.status(401).json({ msg: "Unauthorized request" });
+    if (!verifieduser) {
+      return res.status(401).json({ msg: "Unauthorized request" });
+    }
     req.user = verifieduser;
     next();
   } catch (error) {
@@ -30,7 +32,7 @@ const isAdmin = async (req, res, next) => {
 
 const isUser = async (req, res, next) => {
   const role = req.user.role;
-  if (role !== "User") {
+  if (role !== "user") {
     return res.status(403).json({ msg: "UnAuthorized!" });
   }
   next();

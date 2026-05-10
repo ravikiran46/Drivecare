@@ -45,7 +45,7 @@ const NavBar = () => {
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2.5">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <span className="self-center text-2xl font-semibold text-gray-800 whitespace-nowrap">
-            Flowbite
+            Drivecare
           </span>
         </a>
 

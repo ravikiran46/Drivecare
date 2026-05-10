@@ -19,7 +19,7 @@ const post_vehicle = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.stauts(500).json({
+    return res.status(500).json({
       msg: "An error occured while adding vehicle try after sometime",
     });
   }
@@ -40,7 +40,7 @@ const update_vehicle = async (req, res) => {
   const { id } = req.params;
   const { category, vehicle_number, brand, model, variant, color } = req.body;
   if (!id) {
-    return res.status(203).json({ msg: "ID must be provided" });
+    return res.status(400).json({ msg: "ID must be provided" });
   }
   const updatedfeilds = {};
   if (vehicle_number) updatedfeilds.vehicle_number = vehicle_number;

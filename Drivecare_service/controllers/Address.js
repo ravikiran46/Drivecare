@@ -19,7 +19,7 @@ const post_address = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.stauts(500).json({
+    return res.status(500).json({
       msg: "An error occured while adding address try after sometime",
     });
   }
@@ -41,7 +41,7 @@ const update_address = async (req, res) => {
   const { flat_no, block_no, parking_no, landmark, address_category } =
     req.body;
   if (!id) {
-    return res.status(203).json({ msg: "ID must be provided" });
+    return res.status(400).json({ msg: "ID must be provided" });
   }
   const updatedfeilds = {};
   if (flat_no) updatedfeilds.flat_no = flat_no;
