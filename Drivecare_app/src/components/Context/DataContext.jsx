@@ -49,10 +49,14 @@ export default function DataProvider({ children }) {
     }
   };
   useEffect(() => {
-    getVehicles();
+    if (token) {
+      getVehicles();
+    }
   }, [token]);
   useEffect(() => {
-    fetchAddresses();
+    if (token) {
+      fetchAddresses();
+    }
   }, [token]);
 
   return (

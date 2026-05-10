@@ -1,15 +1,21 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "./Context/useAuth";
 import PropTypes from "prop-types";
 const ProtectedRoute = ({ allowedroles }) => {
   const { user } = useAuth();
-  return allowedroles.includes(user && user.role) ? (
-    <Outlet />
-  ) : (
-    <div className="w-screen text-xl text-white bg-black">
-      Permission denied
-    </div>
-  );
+
+  if (!user) {
+    return <Navigate to="/Login" />;
+  }
+
+  if (!allowedroles.includes(user.role)) {
+    return (
+      <div className="flex justify-center h-screen text-xl item-center">
+        You don&apos;t have access to this page
+      </div>
+    );
+  }
+  return <Outlet />;
 };
 
 ProtectedRoute.propTypes = {

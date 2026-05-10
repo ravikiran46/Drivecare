@@ -96,7 +96,7 @@ const Login = () => {
         <div className="p-6 ml-auto md:ml-8">
           <a href="/" className="">
             <span className="text-2xl font-semibold text-gray-800">
-              Flowbite
+              DriveCare
             </span>
           </a>
         </div>
@@ -129,7 +129,7 @@ const Login = () => {
             className="box-border w-full max-w-[400px] p-6 bg-white rounded-xl shadow-md text-center"
           >
             <div className="text-center">
-              <h1 className="mb-3 text-2xl font-semibold">Handsout</h1>
+              <h1 className="mb-3 text-2xl font-semibold">DriveCare</h1>
               <span className="text-sm text-slate-600">
                 We&apos;ll sign you in or create a new account if you don&apos;t
                 have one yet

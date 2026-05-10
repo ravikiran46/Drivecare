@@ -5,7 +5,7 @@ import Login from "./components/Nav/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Pricing from "./components/Nav/Pricing";
 import Services from "./components/Nav/Services";
-import Admin_Home from "./components/admin/admin_Home";
+import Admin_Home from "./components/admin/Admin_Home";
 import Admin_Services from "./components/admin/Admin_Services";
 import User_Home from "./components/user/User_Home";
 import Vehicle from "./components/user/Vehicle";
