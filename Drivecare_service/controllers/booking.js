@@ -22,15 +22,14 @@ const create_booking = async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
-
   try {
     const booking = await bookings.create({
       user_Id,
       vehicle_Id,
       address_Id,
-      date,
+      date: Date.parse(date),
       time,
-      total_price,
+      total_price: Number(total_price),
       service_Id,
       notes,
     });
@@ -45,7 +44,7 @@ const create_booking = async (req, res) => {
   }
 };
 
-const get_booking = async (req, res) => {
+const get_user_booking = async (req, res) => {
   try {
     const data = await bookings
       .find({ user_Id: req.user.id })
@@ -61,29 +60,6 @@ const get_booking = async (req, res) => {
     res
       .status(400)
       .json({ message: "Failed to get booking", error: error.message });
-  }
-};
-
-const get_booking_by_id = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const data = await bookings
-      .findById(id)
-      .populate("service_Id")
-      .populate("vehicle_Id")
-      .populate("address_Id")
-      .populate("agent_Id");
-    if (!data)
-      return res
-        .status(404)
-        .json({ msg: `cannot get the data with this ${id}` });
-    res.status(200).json({ data: data });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      message: "Failed to get booking",
-      error: error.message,
-    });
   }
 };
 
@@ -175,8 +151,7 @@ const delete_booking = async (req, res) => {
 
 module.exports = {
   create_booking,
-  get_booking,
-  get_booking_by_id,
+  get_user_booking,
   get_all_bookings,
   update_bookings,
   update_booking_by_user,
