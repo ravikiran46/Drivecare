@@ -1,6 +1,7 @@
 const bookings = require("../models/bookings");
+const ServerError = require("../Utils/ServerError");
 
-const create_booking = async (req, res) => {
+const create_booking = async (req, res, next) => {
   const {
     user_Id,
     vehicle_Id,
@@ -20,7 +21,7 @@ const create_booking = async (req, res) => {
     !service_Id ||
     !total_price
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return next(new ServerError("All fields are required", 400));
   }
   try {
     const booking = await bookings.create({
@@ -38,32 +39,32 @@ const create_booking = async (req, res) => {
       .json({ msg: "Booking created successfully", data: booking });
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json({ message: "Failed to create booking", error: error.message });
+    next(error);
   }
 };
 
-const get_user_booking = async (req, res) => {
+const get_user_booking = async (req, res, next) => {
+  const userId = req.user.id;
+  if (!userId) {
+    return next(new ServerError("User not authenticated", 401));
+  }
   try {
     const data = await bookings
-      .find({ user_Id: req.user.id })
+      .find({ user_Id: userId })
       .populate("service_Id")
       .populate("vehicle_Id")
       .populate("address_Id")
       .populate("agent_Id")
       .sort({ createdAt: -1 });
-    if (!data) return res.status(404).json({ msg: "cannot get the data" });
+    if (!data) return next(new ServerError("Cannot get the data", 404));
     res.status(200).json({ data: data });
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json({ message: "Failed to get booking", error: error.message });
+    next(error);
   }
 };
 
-const get_all_bookings = async (req, res) => {
+const get_all_bookings = async (req, res, next) => {
   try {
     const data = await bookings
       .find()
@@ -72,24 +73,27 @@ const get_all_bookings = async (req, res) => {
       .populate("address_Id")
       .populate("agent_Id")
       .sort({ createdAt: -1 });
-    if (!data) return res.status(404).json({ msg: "cannot get the data" });
+    if (!data) return next(new ServerError("Cannot get the data", 404));
     res.status(200).json({ data: data });
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json({ message: "Failed to get bookings", error: error.message });
+    next(error);
   }
 };
 
-const update_bookings = async (req, res) => {
+const update_bookings = async (req, res, next) => {
   const { id } = req.params;
   const { status, agent_Id } = req.body;
 
-  if (!status || !agent_Id) {
-    return res
-      .status(400)
-      .json({ message: "Status and agent_Id are required" });
+  const booking = await bookings.findById(id);
+  if (!booking) {
+    return next(
+      new ServerError(`Cannot find the booking with this ${id}`, 404),
+    );
+  }
+
+  if (!status && !agent_Id) {
+    return next(new ServerError("Either status or agent_Id is required", 400));
   }
   try {
     const data = await bookings.findByIdAndUpdate(
@@ -98,21 +102,31 @@ const update_bookings = async (req, res) => {
       { new: true },
     );
     if (!data)
-      return res
-        .status(404)
-        .json({ msg: `cannot update the data with this ${id}` });
+      return next(
+        new ServerError(`Cannot update the data with this ${id}`, 404),
+      );
     res.status(200).json({ msg: "Booking updated successfully", data: data });
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json({ message: "Failed to update booking", error: error.message });
+    next(error);
   }
 };
 
-const update_booking_by_user = async (req, res) => {
+const update_booking_by_user = async (req, res, next) => {
   const { id } = req.params;
   const { date, time, notes, address_Id, serviceId, vehicle_Id } = req.body;
+
+  const booking = await bookings.findById(id);
+  if (!booking)
+    return next(
+      new ServerError(`Cannot find the booking with this ${id}`, 404),
+    );
+
+  if (!date && !time && !notes && !address_Id && !serviceId && !vehicle_Id) {
+    return next(
+      new ServerError("At least one field is required to update", 400),
+    );
+  }
   try {
     const data = await bookings.findByIdAndUpdate(
       id,
@@ -120,32 +134,28 @@ const update_booking_by_user = async (req, res) => {
       { new: true },
     );
     if (!data)
-      return res
-        .status(404)
-        .json({ msg: `cannot update the data with this ${id}` });
+      return next(
+        new ServerError(`Cannot update the data with this ${id}`, 404),
+      );
     res.status(200).json({ msg: "Booking updated successfully", data: data });
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json({ message: "Failed to update booking", error: error.message });
+    next(error);
   }
 };
 
-const delete_booking = async (req, res) => {
+const delete_booking = async (req, res, next) => {
   const { id } = req.params;
   try {
     const data = await bookings.findByIdAndDelete(id);
     if (!data)
-      return res
-        .status(404)
-        .json({ msg: `cannot delete the data with this ${id}` });
+      return next(
+        new ServerError(`Cannot delete the data with this ${id}`, 404),
+      );
     res.status(200).json({ msg: "Booking deleted successfully", data: data });
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json({ message: "Failed to delete booking", error: error.message });
+    next(error);
   }
 };
 
