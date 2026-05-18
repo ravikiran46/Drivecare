@@ -9,9 +9,11 @@ const userRouter = require("./Routes/user");
 const ServiceRouter = require("./Routes/Services");
 const vehicleRouter = require("./Routes/vehicles");
 const addressRouter = require("./Routes/Address");
+const bookingRouter = require("./Routes/Booking");
 
 // middlewares
 const { verify } = require("./middlewares/authentication");
+const errorhandler = require("./middlewares/errorHandler");
 
 const app = express();
 const PORT = 3000;
@@ -37,5 +39,10 @@ app.use("/vehicle", verify, vehicleRouter);
 
 app.use("/address", verify, addressRouter);
 
+app.use("/booking", verify, bookingRouter);
 // local run  setup
+
+// Error Handler
+app.use(errorhandler);
+
 app.listen(PORT, () => console.log(`server started  at ${PORT}`));

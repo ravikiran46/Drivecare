@@ -19,6 +19,18 @@ PATCH - /service --> update the service
 
 DELETE - /service --> delte the service
 
+/booking
+
+POST - /booking ---> create new booking 
+
+GET - /booking --> get booking 
+
+GET - /booking/all --> get all bookings (only admin)
+
+PATCH -/booking/:id --> update booking with id
+
+DELETE - /booking/:id --> cancle booking
+
 
 models - 
 
