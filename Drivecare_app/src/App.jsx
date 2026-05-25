@@ -13,6 +13,7 @@ import Address from "./components/user/Address";
 import SingleService from "./components/user/SingleService";
 import Payment from "./components/user/Payment";
 import DataProvider from "./components/Context/DataContext";
+import Dashboard from "./components/user/components/Dashboard";
 function App() {
   return (
     <div>
@@ -27,6 +28,7 @@ function App() {
             <Route path="/user" element={<User_Home />} />
             <Route path="/vehicles" element={<Vehicle />} />
             <Route path="/address" element={<Address />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/service/:id" element={<SingleService />} />
             <Route path="/payment/:id" element={<Payment />} />
           </Route>

@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/popover";
 import car from "../../../assets/car1.png";
 import bike from "../../../assets/bike.png";
+import instance from "../../api/api_Instance";
+import useAuth from "../../Context/useAuth";
+import Summary from "./Summary";
 
 const Card = ({ Service, vehicle_data, address_data }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -20,51 +23,30 @@ const Card = ({ Service, vehicle_data, address_data }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const { token } = useAuth();
 
   const handleNextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
   // Handle date change and generate time slots
-  const handleDateChange = (date) => {
+  const handleDateChange = async (date) => {
     setSelectedDate(date);
-    setTimeSlots(["10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM"]);
+    try {
+      const res = await instance.get("/timeslot/active", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setTimeSlots(res.data.data.map((ts) => ts.slot));
+    } catch (error) {
+      console.log("Eror fetching time slots:", error);
+      setTimeSlots([]); // Clear time slots on error
+    }
   };
 
   const handleVehicleSelect = (vehicle) => setSelectedVehicle(vehicle);
   const handleAddressSelect = (address) => setSelectedAddress(address);
-
-  const Summary = () => (
-    <div className="p-5 m-5 bg-white border rounded-lg shadow-md">
-      <h3 className="mb-4 text-2xl font-semibold">Summary</h3>
-      <p>
-        <strong>Service:</strong> {Service?.service_name}
-      </p>
-      <p>
-        <strong>Vehicle:</strong> {selectedVehicle?.vehicle_number}
-      </p>
-      <p>
-        <strong>Address:</strong> {selectedAddress?.flat_no},{" "}
-        {selectedAddress?.block_no}
-      </p>
-      <p>
-        <strong>Date:</strong> {format(selectedDate, "PPP")}
-      </p>
-      <p>
-        <strong>Time Slot:</strong> {selectedTimeSlot}
-      </p>
-      <p>
-        <strong>Price:</strong> {}
-      </p>{" "}
-      {/* Replace with actual price data */}
-      <Button
-        onClick={() => console.log(Service?.service_name)}
-        className="mt-4 bg-violet-500 hover:bg-violet-400"
-      >
-        Proceed to Payment
-      </Button>
-    </div>
-  );
 
   return (
     <>
@@ -148,7 +130,13 @@ const Card = ({ Service, vehicle_data, address_data }) => {
           </div>
           <div className="flex justify-end md:mr-96">
             <Button
-              onClick={handleNextStep}
+              onClick={() => {
+                if (!selectedVehicle) {
+                  alert("Please select a vehicle to proceed.");
+                  return;
+                }
+                handleNextStep;
+              }}
               disabled={!selectedVehicle}
               className="mt-4 bg-violet-500 hover:bg-violet-400"
             >
@@ -190,7 +178,13 @@ const Card = ({ Service, vehicle_data, address_data }) => {
           </div>
           <div className="flex justify-end md:mr-96">
             <Button
-              onClick={handleNextStep}
+              onClick={() => {
+                if (!selectedAddress) {
+                  alert("Please select an address to proceed.");
+                  return;
+                }
+                handleNextStep();
+              }}
               disabled={!selectedAddress}
               className="mt-4 bg-violet-500 hover:bg-violet-400"
             >
@@ -210,7 +204,7 @@ const Card = ({ Service, vehicle_data, address_data }) => {
                   variant="outline"
                   className={cn(
                     "w-auto ml-5 text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
+                    !selectedDate && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon className="w-4 h-4 mr-2 " />
@@ -253,7 +247,13 @@ const Card = ({ Service, vehicle_data, address_data }) => {
           )}
           <div className="flex justify-end md:mr-52">
             <Button
-              onClick={handleNextStep}
+              onClick={() => {
+                if (!selectedDate || !selectedTimeSlot) {
+                  alert("Please select both a date and time slot to proceed.");
+                  return;
+                }
+                handleNextStep();
+              }}
               disabled={!selectedDate || !selectedTimeSlot}
               className="mt-6 bg-violet-500 hover:bg-violet-400"
             >
@@ -263,7 +263,15 @@ const Card = ({ Service, vehicle_data, address_data }) => {
         </>
       )}
 
-      {currentStep === 4 && <Summary />}
+      {currentStep === 4 && (
+        <Summary
+          Service={Service}
+          selectedAddress={selectedAddress}
+          selectedTimeSlot={selectedTimeSlot}
+          selectedVehicle={selectedVehicle}
+          selectedDate={selectedDate}
+        />
+      )}
     </>
   );
 };

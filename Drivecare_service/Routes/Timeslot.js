@@ -10,11 +10,11 @@ const {
 
 const { isAdmin } = require("../middlewares/authentication");
 
-Router.use(isAdmin);
-
-Router.route("/").post(createTImeslot).get(get_all_Timeslots);
+Router.route("/").post(createTImeslot, isAdmin).get(get_all_Timeslots, isAdmin);
 
 Router.route("/active").get(get_active_Timeslots);
-Router.route("/:id").put(update_timeslot).delete(delete_timeslot);
+Router.route("/:id")
+  .put(update_timeslot, isAdmin)
+  .delete(delete_timeslot, isAdmin);
 
 module.exports = Router;

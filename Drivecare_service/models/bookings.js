@@ -9,7 +9,7 @@ const bookingSchema = new mongoose.Schema(
     },
     vehicle_Id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "car",
+      ref: "vehicle",
       required: true,
     },
     address_Id: {
@@ -19,7 +19,7 @@ const bookingSchema = new mongoose.Schema(
     },
     service_Id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Service",
+      ref: "service",
       required: true,
     },
     date: {
