@@ -1,20 +1,25 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
-import App from "./App.jsx";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient } from "@tanstack/react-query";
+// import { Toaster } from "react-hot-toast";
+import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
-import AuthProvider from "./components/Context/Authenticationcontext.jsx";
-// import DataProvider from "./components/Context/DataContext.jsx";
+const queryClient = new QueryClient();
+
+const router = createRouter({
+  routeTree,
+  context: {
+    queryClient, // <-- this is what RootComponent receives
+    scrollRestoration: true,
+    defaultPreloadStaleTime: 0,
+  },
+});
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <Toaster position="top-right" />
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>
+    {/* <Toaster position="top-right" /> */}
+    <RouterProvider router={router} />
+  </StrictMode>,
 );

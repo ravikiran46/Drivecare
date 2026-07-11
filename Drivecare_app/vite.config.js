@@ -1,9 +1,12 @@
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { fileURLToPath } from "url";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), TanStackRouterVite()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

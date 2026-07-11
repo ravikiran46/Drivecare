@@ -1,8 +1,17 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "./Context/useAuth";
 import PropTypes from "prop-types";
+
 const ProtectedRoute = ({ allowedroles }) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center h-screen text-xl item-center">
+        Loading...
+      </div>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/Login" />;
