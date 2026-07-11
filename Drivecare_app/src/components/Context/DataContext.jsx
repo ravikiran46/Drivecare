@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import useAuth from "./useAuth";
-import instance from "../api/api_Instance";
+import useAuth from "@/components/Context/useAuth";
+import instance from "@/components/api/api_Instance";
 
 export const DataContext = createContext();
 

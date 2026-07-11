@@ -37,8 +37,8 @@ const bookingSchema = new mongoose.Schema(
       default: "pending",
     },
     agent_Id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "agent",
+      type: String,
+      // ref: "agent",
       default: null,
     },
     total_price: {

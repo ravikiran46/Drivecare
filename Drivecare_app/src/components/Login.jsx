@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import instance from "../api/api_Instance";
+import instance from "@/components/api/api_Instance";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../Context/useAuth";
+import { useNavigate } from "@tanstack/react-router";
+import useAuth from "@/components/Context/useAuth";
 
 const Login = () => {
   const {
@@ -17,8 +17,14 @@ const Login = () => {
   const [countdown, setCountdown] = useState(30); // Countdown for resend OTP
   const [canResendOtp, setCanResendOtp] = useState(false); // Resend OTP control
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const formData = watch();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/user");
+    }
+  }, [user, navigate]);
 
   // Timer management
   useEffect(() => {
@@ -49,6 +55,9 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(
+        error.response?.data?.msg || "Failed to send OTP. Please try again.",
+      );
     }
   };
 
@@ -70,15 +79,15 @@ const Login = () => {
       });
       if (res.status === 200) {
         toast.success(res.data.msg);
-        setTimeout(() => {
-          login(res.data.token);
-          navigate("/user");
-        }, 1000);
+        login(res.data.token);
       } else {
         toast.error(res.data.msg);
       }
     } catch (error) {
       console.log(error);
+      toast.error(
+        error.response?.data?.msg || "Failed to verify OTP. Please try again.",
+      );
     }
   };
 
