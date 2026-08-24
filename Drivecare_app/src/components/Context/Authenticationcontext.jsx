@@ -5,7 +5,7 @@ import instance from "@/components/api/api_Instance";
 
 export const Authcontext = createContext();
 
-export default function AuthProvider({ children }) {
+export default function AuthProvider({ children = {} }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isLoading, setIsLoading] = useState(true);

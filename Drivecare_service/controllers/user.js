@@ -8,7 +8,7 @@ dotenv.config();
 
 const OTP_LENGTH = 6;
 const OTP_TTL_MS = 5 * 60 * 1000;
-const OTP_RESEND_DELAY_MS = 2 * 60 * 1000;
+const OTP_RESEND_DELAY_MS = 30 * 1000;
 
 const generateOtp = () =>
   String(Math.floor(100000 + Math.random() * 900000)).padStart(OTP_LENGTH, "0");
@@ -50,7 +50,6 @@ const handlecreateuser = async (req, res) => {
   // if (normalizedMobile && !isMobileValid(normalizedMobile)) {
   //   return res.status(400).json({ msg: "Enter a valid mobile number." });
   // }
-
   const otp = generateOtp();
   const otpHash = hashOtp(otp);
   const now = new Date();
@@ -58,14 +57,12 @@ const handlecreateuser = async (req, res) => {
 
   try {
     const existingUser = await users.findOne({ email: normalizedEmail });
-
     if (existingUser) {
       if (existingUser.name !== trimmedName) {
         return res
           .status(400)
           .json({ msg: "Email is already registered with a different name." });
       }
-
       if (
         existingUser.otpRequestedAt &&
         now.getTime() - existingUser.otpRequestedAt.getTime() <

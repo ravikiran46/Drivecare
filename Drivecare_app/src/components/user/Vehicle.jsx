@@ -6,7 +6,7 @@ import instance from "../api/api_Instance";
 import useAuth from "../Context/useAuth";
 import car from "../../assets/car1.png";
 import bike from "../../assets/bike.png";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import useDataContext from "../Context/useDataContext";
 
 const Vehicle = () => {
@@ -63,7 +63,7 @@ const Vehicle = () => {
           { ...data, user_Id: user.id },
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         closeModal();
       } else {
@@ -72,7 +72,7 @@ const Vehicle = () => {
           { ...data, user_Id: user.id },
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
       }
 
@@ -98,7 +98,7 @@ const Vehicle = () => {
         { ...data, user_Id: user.id },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       if (res.status === 201) {
