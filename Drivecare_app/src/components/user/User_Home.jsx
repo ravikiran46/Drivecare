@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import propTypes from "prop-types";
 import useAuth from "@/components/Context/useAuth";
-import { useBookings, useBooking } from "@/lib/bookings";
+import { useBookings } from "@/lib/bookings";
 
 export default function User_Home() {
   const navigate = useNavigate();
@@ -197,7 +197,7 @@ function BookingCard({ b, muted }) {
       {b.status !== "completed" && (
         <div className="mt-4 flex justify-end border-t border-border pt-4">
           <Link
-            to="/track"
+            to={`/track/${b.id}`}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
           >
             Track live <ArrowRight className="h-3.5 w-3.5" />
