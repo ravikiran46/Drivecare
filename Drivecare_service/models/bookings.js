@@ -7,14 +7,12 @@ const bookingSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
-    vehicle_Id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "vehicle",
+    vehicle: {
+      type: String,
       required: true,
     },
-    address_Id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "address",
+    address: {
+      type: String,
       required: true,
     },
     service_Id: {
@@ -33,8 +31,8 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "completed", "cancelled"],
-      default: "pending",
+      enum: ["scheduled", "in_progress", "completed", "cancelled"],
+      default: "scheduled",
     },
     agent_Id: {
       type: String,

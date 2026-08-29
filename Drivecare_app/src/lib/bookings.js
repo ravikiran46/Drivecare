@@ -76,7 +76,7 @@ export const useCreateBooking = () => {
 
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: saveBooking,
+    mutationFn: (bookingData) => saveBooking(bookingData, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings", token] });
     },
@@ -103,7 +103,7 @@ export const useDeleteBooking = () => {
 
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteBooking,
+    mutationFn: (id) => deleteBooking(id, token),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["bookings", token] });
       queryClient.removeQueries({ queryKey: ["booking", id, token] });

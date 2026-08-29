@@ -9,45 +9,45 @@ import {
   MapPin,
   Plus,
 } from "lucide-react";
-// import { clearUser, getBookings, setUser } from "@/lib/bookings";
 import propTypes from "prop-types";
 import useAuth from "@/components/Context/useAuth";
+import { useBookings, useBooking } from "@/lib/bookings";
 
 export default function User_Home() {
   const navigate = useNavigate();
-  const [bookings, setBookings] = useState([]);
+  const { user, token } = useAuth();
+  const {
+    data: BookingsData,
+    isLoading: bookingsLoading,
+    error: bookingsError,
+  } = useBookings({
+    enabled: !!token,
+  });
   // const [user, setUserState] = useState(null);
-  // const [editing, setEditing] = useState(false);
-  // const [form, setForm] = useState({ name: "", email: "" }); // for edditing account details
-  const { user } = useAuth();
+
+  const Bookings =
+    BookingsData?.data?.map((b) => ({
+      id: b._id,
+      service: b.service_Id,
+      price: `₹${b.total_price}`,
+      slot: b.time,
+      desc: b.details,
+      category: b.category,
+      vehicle: b.vehicle,
+      address: b.address,
+      city: b.address.split(",")[1].trim(),
+      createdAt: b.createdAt,
+      status: b.status,
+    })) || [];
 
   useEffect(() => {
     if (!user) {
       navigate({ to: "/login" });
       return;
     }
-    // setUserState(user);
-    // setForm(user);  for edditing account details
-    // setBookings(getBookings());
   }, [navigate, user]);
 
-  // function signOut() {
-  //   clearUser();
-  //   navigate({ to: "/" });
-  // }
-
-  // function saveAccount() {
-  //   if (!form.name.trim() || !form.email.trim()) {
-  //     toast.error("Name and email are required.");
-  //     return;
-  //   }
-  //   setUser(form); // for editing account details
-  //   // setUserState(form);
-  //   setEditing(false);
-  //   toast.success("Account details updated.");
-  // }
-
-  if (!user || bookings === null) {
+  if (!user || Bookings === null) {
     return (
       <main className="min-h-screen bg-background">
         <div className="mx-auto max-w-6xl px-6 py-24 text-center text-muted-foreground">
@@ -57,8 +57,8 @@ export default function User_Home() {
     );
   }
 
-  const upcoming = bookings.filter((b) => b.status !== "completed");
-  const completed = bookings.filter((b) => b.status === "completed");
+  const upcoming = Bookings.filter((b) => b.status !== "completed");
+  const completed = Bookings.filter((b) => b.status === "completed");
   const firstName = user.name?.split(" ")[0] || "there";
 
   return (
@@ -74,7 +74,7 @@ export default function User_Home() {
               Hi {firstName} 👋
             </h1>
             <p className="mt-2 max-w-xl text-muted-foreground">
-              {bookings.length === 0
+              {Bookings.length === 0
                 ? "Your garage is empty — no bookings yet."
                 : `You have ${upcoming.length} upcoming ${upcoming.length === 1 ? "booking" : "bookings"} and ${completed.length} completed.`}
             </p>
@@ -94,7 +94,7 @@ export default function User_Home() {
         <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[1.7fr,1fr]">
           {/* Bookings */}
           <div className="space-y-6">
-            {bookings.length === 0 ? (
+            {Bookings.length === 0 ? (
               <EmptyState />
             ) : (
               <>
@@ -129,91 +129,12 @@ export default function User_Home() {
               </>
             )}
           </div>
-
-          {/* Sidebar — merged account + stats + editable settings */}
-          {/* <aside className="space-y-6">
-            <div
-              id="account"
-              className="rounded-3xl border border-border bg-gradient-card p-6 shadow-elegant"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-widest text-primary">
-                    Account
-                  </p>
-                  {!editing && (
-                    <>
-                      <p className="mt-3 font-semibold">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </>
-                  )}
-                </div>
-                {!editing ? (
-                  <button
-                    onClick={() => setEditing(true)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted-foreground transition hover:text-foreground"
-                  >
-                    <Pencil className="h-3 w-3" /> Edit
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setEditing(false);
-                      // setForm(user);  for editing account details
-                    }}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted-foreground transition hover:text-foreground"
-                  >
-                    <X className="h-3 w-3" /> Cancel
-                  </button>
-                )}
-              </div>
-
-              {editing && (
-                <div className="mt-4 space-y-3">
-                  <label className="block">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Full name
-                    </span>
-                    <input
-                      value={form.name}
-                      onChange={(e) =>
-                        setForm({ ...form, name: e.target.value })
-                      }
-                      className="mt-1 h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Email
-                    </span>
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
-                      }
-                      className="mt-1 h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"
-                    />
-                  </label>
-                  <button
-                    onClick={saveAccount}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition hover:-translate-y-0.5"
-                  >
-                    <Save className="h-4 w-4" /> Save changes
-                  </button>
-                </div>
-              )} */}
-
           <div className="mt-5 grid grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-surface text-center">
-            <Stat label="Total" value={bookings.length} />
+            <Stat label="Total" value={Bookings.length} />
             <Stat label="Upcoming" value={upcoming.length} />
             <Stat label="Done" value={completed.length} />
           </div>
         </div>
-        {/* </aside> */}
-        {/* </div> */}
       </section>
     </main>
   );
@@ -249,9 +170,9 @@ function BookingCard({ b, muted }) {
             <Car className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-semibold">{b.service.name}</p>
+            <p className="font-semibold">{b.service.service_name}</p>
             <p className="text-xs text-muted-foreground">
-              #{b.id} · {b.address.car || "Your car"}
+              # {b.id} · {b.vehicle || "Your car"}
             </p>
             <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
@@ -259,7 +180,7 @@ function BookingCard({ b, muted }) {
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-accent-teal" />
-                {b.address.city}
+                {b.city}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-accent-teal" />
@@ -270,9 +191,7 @@ function BookingCard({ b, muted }) {
         </div>
         <div className="text-right">
           <StatusBadge status={b.status} />
-          <p className="mt-2 font-display text-lg font-semibold">
-            {b.service.price}
-          </p>
+          <p className="mt-2 font-display text-lg font-semibold">{b.price}</p>
         </div>
       </div>
       {b.status !== "completed" && (
@@ -333,13 +252,12 @@ BookingCard.propTypes = {
   b: propTypes.shape({
     id: propTypes.string.isRequired,
     service: propTypes.shape({
-      name: propTypes.string.isRequired,
-      price: propTypes.string.isRequired,
+      service_name: propTypes.string.isRequired,
     }).isRequired,
-    address: propTypes.shape({
-      car: propTypes.string,
-      city: propTypes.string.isRequired,
-    }).isRequired,
+    price: propTypes.string.isRequired,
+    vehicle: propTypes.string,
+    address: propTypes.string,
+    city: propTypes.string,
     slot: propTypes.string.isRequired,
     createdAt: propTypes.string.isRequired,
     status: propTypes.oneOf(["scheduled", "in_progress", "completed"])

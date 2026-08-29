@@ -48,7 +48,7 @@ const Dashboard = () => {
     cancelled: "bg-red-100 text-red-800",
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading your dashboard...</div>;
 
   return (
     <div>

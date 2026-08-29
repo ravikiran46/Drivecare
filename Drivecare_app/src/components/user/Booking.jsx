@@ -17,6 +17,7 @@ import { useCreateBooking } from "@/lib/bookings";
 import { useServices } from "@/lib/services";
 import { useSlots } from "@/lib/slots";
 import useAuth from "@/components/Context/useAuth";
+import { getSlotDate } from "@/lib/utils";
 
 const steps = ["Service", "Slot", "Address", "Confirm"];
 const iconMap = {
@@ -42,7 +43,7 @@ const FALLBACK_SLOTS = [
 
 export default function BookPage() {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const createBooking = useCreateBooking();
   const {
     data: servicesData,
@@ -74,7 +75,7 @@ export default function BookPage() {
 
   let slots = [];
   if (slotsData?.data?.length) {
-    slots = slotsData.data.map((s) => s.time || s);
+    slots = slotsData.data.map((s) => s.slot || s);
   } else {
     slots = FALLBACK_SLOTS;
   }
@@ -113,16 +114,16 @@ export default function BookPage() {
     step === 3;
 
   const handleConfirm = () => {
+    const date = getSlotDate(selectedSlot);
     createBooking.mutate(
       {
-        service: {
-          id: selectedService.id,
-          name: selectedService.name,
-          price: selectedService.price,
-          time: selectedService.time,
-        },
-        slot: selectedSlot,
-        address,
+        user_Id: user.id,
+        service_Id: selectedService.id,
+        total_price: selectedService.price.slice(1),
+        date: date,
+        time: selectedSlot,
+        vehicle: address.car,
+        address: `${address.line}, ${address.city}`,
       },
       {
         onSuccess: () => {

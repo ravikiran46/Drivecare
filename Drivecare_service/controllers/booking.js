@@ -4,30 +4,23 @@ const ServerError = require("../Utils/ServerError");
 const create_booking = async (req, res, next) => {
   const {
     user_Id,
-    vehicle_Id,
-    address_Id,
+    vehicle,
+    address,
     service_Id,
     date,
     time,
     total_price,
     notes,
   } = req.body;
-  if (
-    !user_Id ||
-    !vehicle_Id ||
-    !address_Id ||
-    !date ||
-    !time ||
-    !service_Id ||
-    !total_price
-  ) {
+
+  if (!user_Id || !address || !date || !time || !service_Id || !total_price) {
     return next(new ServerError("All fields are required", 400));
   }
   try {
     const booking = await bookings.create({
       user_Id,
-      vehicle_Id,
-      address_Id,
+      vehicle,
+      address,
       date: Date.parse(date),
       time,
       total_price: Number(total_price),
@@ -53,8 +46,8 @@ const get_user_booking = async (req, res, next) => {
     const data = await bookings
       .find({ user_Id: userId })
       .populate("service_Id")
-      .populate("vehicle_Id")
-      .populate("address_Id")
+      .populate("vehicle")
+      .populate("address")
       .populate("agent_Id")
       .sort({ createdAt: -1 });
     if (!data) return next(new ServerError("Cannot get the data", 404));
@@ -70,8 +63,8 @@ const get_all_bookings = async (req, res, next) => {
     const data = await bookings
       .find()
       .populate("service_Id")
-      .populate("vehicle_Id")
-      .populate("address_Id")
+      .populate("vehicle")
+      .populate("address")
       .populate("agent_Id")
       .sort({ createdAt: -1 });
     if (!data) return next(new ServerError("Cannot get the data", 404));
@@ -115,7 +108,7 @@ const update_bookings = async (req, res, next) => {
 
 const update_booking_by_user = async (req, res, next) => {
   const { id } = req.params;
-  const { date, time, notes, address_Id, serviceId, vehicle_Id } = req.body;
+  const { date, time, notes, address, serviceId, vehicle } = req.body;
 
   const booking = await bookings.findById(id);
   if (!booking)
@@ -123,7 +116,7 @@ const update_booking_by_user = async (req, res, next) => {
       new ServerError(`Cannot find the booking with this ${id}`, 404),
     );
 
-  if (!date && !time && !notes && !address_Id && !serviceId && !vehicle_Id) {
+  if (!date && !time && !notes && !address && !serviceId && !vehicle) {
     return next(
       new ServerError("At least one field is required to update", 400),
     );
@@ -131,7 +124,7 @@ const update_booking_by_user = async (req, res, next) => {
   try {
     const data = await bookings.findByIdAndUpdate(
       id,
-      { date, time, notes, address_Id, serviceId, vehicle_Id },
+      { date, time, notes, address, serviceId, vehicle },
       { new: true },
     );
     if (!data)
