@@ -1,5 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Calendar,
@@ -11,10 +10,11 @@ import {
 } from "lucide-react";
 import propTypes from "prop-types";
 import useAuth from "@/components/Context/useAuth";
+import Navbar from "@/components/Nav";
 import { useBookings } from "@/lib/bookings";
+import { useRoleGuard } from "@/components/Context/useRoleGuard";
 
 export default function User_Home() {
-  const navigate = useNavigate();
   const { user, token } = useAuth();
   const {
     data: BookingsData,
@@ -23,7 +23,7 @@ export default function User_Home() {
   } = useBookings({
     enabled: !!token,
   });
-  // const [user, setUserState] = useState(null);
+  const guarded = useRoleGuard(["user"]);
 
   const Bookings =
     BookingsData?.data?.map((b) => ({
@@ -40,16 +40,10 @@ export default function User_Home() {
       status: b.status,
     })) || [];
 
-  useEffect(() => {
-    if (!user) {
-      navigate({ to: "/login" });
-      return;
-    }
-  }, [navigate, user]);
-
-  if (!user || Bookings === null) {
+  if (!guarded || Bookings === null) {
     return (
       <main className="min-h-screen bg-background">
+        <Navbar />
         <div className="mx-auto max-w-6xl px-6 py-24 text-center text-muted-foreground">
           Loading your dashboard…
         </div>
@@ -63,6 +57,7 @@ export default function User_Home() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <Navbar />
       {/* Header */}
       <section className="bg-hero">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 pb-10 pt-12 md:flex-row md:items-end md:justify-between">
