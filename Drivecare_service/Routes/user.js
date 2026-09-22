@@ -14,10 +14,10 @@ router.route("/login").post(handlecreateuser);
 
 router.post("/verifyotp", veriftotp);
 
-router.get("/me", getCurrentUser);
+router.get("/me", verify, getCurrentUser);
 
 router.post("/user/logout", handlelogout);
 
-router.patch("/user/:id", verify, isUser, handlechangeuserdetails);
+router.patch("/user/me", verify, isUser, handlechangeuserdetails);
 
 module.exports = router;

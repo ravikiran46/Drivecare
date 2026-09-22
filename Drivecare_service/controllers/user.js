@@ -189,7 +189,61 @@ const veriftotp = async (req, res) => {
   return res.status(200).json({ msg: "OTP verified.", token });
 };
 
-const handlechangeuserdetails = async (req, res) => {};
+const handlechangeuserdetails = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { name, email, mobileno } = req.body;
+
+    const isEmailValid = (value) => /^\S+@\S+\.\S+$/.test(value);
+
+    const updateData = {};
+
+    if (name !== undefined) updateData.name = name.trim();
+
+    if (email !== undefined) {
+      if (!isEmailValid(email)) {
+        return res.status(400).json({
+          msg: "Enter a valid email address.",
+        });
+      }
+      updateData.email = email.trim().toLowerCase();
+    }
+    if (mobileno !== undefined && !/^[0-9]{10}$/.test(mobileno)) {
+      return res.status(400).json({
+        msg: "Enter a valid 10-digit phone number.",
+      });
+    }
+    updateData.mobileno = mobileno.trim();
+
+    const updatedUser = await users
+      .findByIdAndUpdate(
+        userId,
+        { $set: updateData },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+      .select("-otp -otpExpiresAt -otpRequestedAt");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        msg: "User not found.",
+      });
+    }
+    return res.status(200).json({
+      msg: "Account updated successfully.",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("handlechangeuserdetails error:", error);
+
+    return res.status(500).json({
+      msg: "Failed to update account.",
+    });
+  }
+};
 
 const handlelogout = (req, res) => {
   return res
@@ -199,18 +253,24 @@ const handlelogout = (req, res) => {
 };
 
 const getCurrentUser = async (req, res) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({ msg: "Not authenticated." });
-  }
-
   try {
-    const decoded = jwt.verify(token, process.env.KEY);
-    return res.status(200).json({ user: decoded });
+    const user = await users
+      .findById(req.user.id)
+      .select("-otp -otpExpiresAt -otpRequestedAt");
+
+    if (!user) {
+      return res.status(404).json({
+        msg: "User not found.",
+      });
+    }
+
+    return res.status(200).json({ user });
   } catch (error) {
-    return res.status(401).json({ msg: "Invalid or expired token." });
+    console.error("getCurrentUser error:", error);
+
+    return res.status(500).json({
+      msg: "Failed to fetch current user.",
+    });
   }
 };
 
