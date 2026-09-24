@@ -17,7 +17,7 @@ export const getBookings = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
+  return response.data.data;
 };
 
 export const getBookingById = async (id, token) => {
@@ -46,8 +46,6 @@ export const deleteBooking = async (id, token) => {
   });
   return response.data;
 };
-
-// ---------- React Query hooks ----------
 
 export const useBookings = (options = {}) => {
   const { token } = useAuth();

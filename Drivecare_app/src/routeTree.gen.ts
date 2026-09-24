@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrackBookingIdRouteImport } from './routes/track.$bookingId'
@@ -29,6 +30,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -50,6 +56,7 @@ const TrackBookingIdRoute = TrackBookingIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/book': typeof BookRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/book': typeof BookRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/book': typeof BookRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -75,13 +84,27 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/account' | '/book' | '/dashboard' | '/login' | '/track/$bookingId'
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/book'
+    | '/dashboard'
+    | '/login'
+    | '/track/$bookingId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/book' | '/dashboard' | '/login' | '/track/$bookingId'
+  to:
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/book'
+    | '/dashboard'
+    | '/login'
+    | '/track/$bookingId'
   id:
     | '__root__'
     | '/'
     | '/account'
+    | '/admin'
     | '/book'
     | '/dashboard'
     | '/login'
@@ -91,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRoute
   BookRoute: typeof BookRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
@@ -120,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account': {
       id: '/account'
       path: '/account'
@@ -147,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  AdminRoute: AdminRoute,
   BookRoute: BookRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,

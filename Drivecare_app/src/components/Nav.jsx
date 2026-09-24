@@ -56,14 +56,6 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-3">
-          {user?.role === "admin" && (
-            <Link
-              to="/admin"
-              className="hidden rounded-full border border-border bg-surface px-4 py-2 text-sm text-foreground transition hover:bg-surface-elevated sm:inline-flex"
-            >
-              Admin console
-            </Link>
-          )}
           {user?.role === "agent" && (
             <Link
               to="/agent"
