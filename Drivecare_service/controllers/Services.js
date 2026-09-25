@@ -1,8 +1,8 @@
 const service = require("../models/Services");
 
 const post_service = async (req, res) => {
-  const { service_name, price, category, details, imgURL } = req.body;
-  if (!service_name || !price || !category || !details || !imgURL) {
+  const { service_name, price, details } = req.body;
+  if (!service_name || !price || !details) {
     return res.status(400).json({ msg: "All feilds are required!" });
   }
   try {
@@ -10,13 +10,11 @@ const post_service = async (req, res) => {
     const data = await service.create({
       service_name,
       price: value,
-      category,
       details,
-      imgURL,
     });
     return res.status(201).json({
       msg: "service added succesfully",
-      data: { service_name, price, category, details, imgURL },
+      data: { service_name, price, details },
     });
   } catch (error) {
     console.log(error);

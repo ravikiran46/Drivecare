@@ -11,12 +11,22 @@ export const saveBooking = async (bookingData, token) => {
   return response.data;
 };
 
+export const getAllBookings = async (token) => {
+  const response = await instance.get("/booking/all", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data;
+};
+
 export const getBookings = async (token) => {
   const response = await instance.get("/booking", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log(response);
   return response.data.data;
 };
 
@@ -38,6 +48,19 @@ export const updateBooking = async (id, updatedData, token) => {
   return response.data;
 };
 
+export const updateBookingStatus = async (id, status, token) => {
+  const response = await instance.patch(
+    `/booking/${id}/status`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.data;
+};
+
 export const deleteBooking = async (id, token) => {
   const response = await instance.delete(`/booking/${id}`, {
     headers: {
@@ -45,6 +68,17 @@ export const deleteBooking = async (id, token) => {
     },
   });
   return response.data;
+};
+
+export const useAllBookings = (options = {}) => {
+  const { token } = useAuth();
+
+  return useQuery({
+    queryKey: ["bookings", token],
+    queryFn: () => getAllBookings(token),
+    enabled: !!token,
+    ...options,
+  });
 };
 
 export const useBookings = (options = {}) => {
@@ -86,7 +120,24 @@ export const useUpdateBooking = () => {
 
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }) => updateBooking(id, data, token),
+    mutationFn: ({ id, data }) => {
+      updateBooking(id, data, token);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["bookings", token] });
+      queryClient.invalidateQueries({
+        queryKey: ["booking", variables.id, token],
+      });
+    },
+  });
+};
+
+export const useUpdateBookingStatus = () => {
+  const { token } = useAuth();
+
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }) => updateBookingStatus(id, status, token),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["bookings", token] });
       queryClient.invalidateQueries({

@@ -15,7 +15,7 @@ router.route("/").post(create_booking).get(get_user_booking);
 
 router.route("/all").get(isAdmin, get_all_bookings);
 
-router.route("/:id/status").put(isAdmin, update_bookings);
+router.route("/:id/status").patch(isAdmin, update_bookings);
 
 router.route("/:id/cancel").delete(delete_booking);
 

@@ -62,17 +62,14 @@ export default function BookPage() {
   });
 
   const services =
-    servicesData?.data?.map((s) => ({
+    servicesData?.map((s) => ({
       id: s._id,
       name: s.service_name,
       price: `₹${s.price}`,
       time: timeMap[s.category] || "—",
       desc: s.details,
-      category: s.category,
       icon: iconMap[s.category] || Car,
-      imgURL: s.imgURL,
     })) || [];
-
   let slots = [];
   if (slotsData?.data?.length) {
     slots = slotsData.data.map((s) => s.slot || s);

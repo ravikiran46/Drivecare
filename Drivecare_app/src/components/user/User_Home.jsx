@@ -26,7 +26,7 @@ export default function User_Home() {
   const guarded = useRoleGuard(["user"]);
 
   const Bookings =
-    BookingsData?.data?.map((b) => ({
+    BookingsData?.map((b) => ({
       id: b._id,
       service: b.service_Id,
       price: `₹${b.total_price}`,

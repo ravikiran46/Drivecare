@@ -5,7 +5,6 @@ dotenv.config();
 async function verify(req, res, next) {
   const authheaders = req.headers["authorization"];
   const token = authheaders && authheaders.split(" ")[1];
-
   if (!token) {
     return res.status(404).json({ msg: "Token not found" });
   }

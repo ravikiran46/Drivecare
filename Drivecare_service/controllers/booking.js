@@ -2,23 +2,15 @@ const bookings = require("../models/bookings");
 const ServerError = require("../Utils/ServerError");
 
 const create_booking = async (req, res, next) => {
-  const {
-    user_Id,
-    vehicle,
-    address,
-    service_Id,
-    date,
-    time,
-    total_price,
-    notes,
-  } = req.body;
+  const { vehicle, address, service_Id, date, time, total_price, notes } =
+    req.body;
 
-  if (!user_Id || !address || !date || !time || !service_Id || !total_price) {
+  if (!address || !date || !time || !service_Id || !total_price) {
     return next(new ServerError("All fields are required", 400));
   }
   try {
     const booking = await bookings.create({
-      user_Id,
+      user_Id: req.user.id,
       vehicle,
       address,
       date: Date.parse(date),
@@ -62,6 +54,7 @@ const get_all_bookings = async (req, res, next) => {
   try {
     const data = await bookings
       .find()
+      .populate({ path: "user_Id", select: "name email mobileno" })
       .populate("service_Id")
       .populate("vehicle")
       .populate("address")

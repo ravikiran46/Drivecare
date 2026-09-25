@@ -30,7 +30,7 @@ export const getServiceById = async (id, token) => {
 };
 
 export const updateService = async (id, updatedData, token) => {
-  const response = await instance.patch(`/service/${id}`, updatedData, {
+  const response = await instance.put(`/service/${id}`, updatedData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -83,7 +83,6 @@ export const useService = (id, options = {}) => {
 
 export const useUpdateService = () => {
   const { token } = useAuth();
-
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }) => updateService(id, data, token),

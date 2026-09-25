@@ -28,7 +28,7 @@ import {
   useUpdateService,
   useDeleteService,
 } from "@/lib/services";
-import { useBookings, useUpdateBooking } from "@/lib/bookings";
+import { useAllBookings, useUpdateBookingStatus } from "@/lib/bookings";
 import { useRoleGuard } from "@/components/Context/useRoleGuard";
 import propTypes from "prop-types";
 
@@ -39,7 +39,7 @@ function AdminPage() {
 
   const { data: services = [], isLoading: ServicesLoading } = useServices();
   const { data: slots = [], isLoading: SlotsLoading } = useSlots();
-  const { data: bookings = [], isLoading: BookingsLoading } = useBookings();
+  const { data: bookings = [], isLoading: BookingsLoading } = useAllBookings();
 
   useEffect(() => {
     if (!guarded) return;
@@ -164,13 +164,12 @@ function Stat({ icon: Icon, label, value }) {
 }
 
 function ServicesPanel({ services }) {
-  const blank = { name: "", price: "", time: "", desc: "" };
+  const blank = { service_name: "", price: "", time: "", details: "" };
   const [draft, setDraft] = useState(blank);
   const createService = useCreateService();
-  console.log(services);
 
   async function add() {
-    if (!draft.name || !draft.price) {
+    if (!draft.service_name || !draft.price) {
       toast.error("Name and price are required.");
       return;
     }
@@ -203,8 +202,8 @@ function ServicesPanel({ services }) {
         <div className="mt-4 space-y-3">
           <Input
             label="Name"
-            value={draft.name}
-            onChange={(v) => setDraft({ ...draft, name: v })}
+            value={draft.service_name}
+            onChange={(v) => setDraft({ ...draft, service_name: v })}
           />
           <Input
             label="Price"
@@ -218,8 +217,8 @@ function ServicesPanel({ services }) {
           />
           <Input
             label="Description"
-            value={draft.desc}
-            onChange={(v) => setDraft({ ...draft, desc: v })}
+            value={draft.details}
+            onChange={(v) => setDraft({ ...draft, details: v })}
           />
           <button
             onClick={add}
@@ -246,8 +245,8 @@ function ServiceRow({ service }) {
       <div className="grid gap-3 sm:grid-cols-3">
         <Input
           label="Name"
-          value={form.name}
-          onChange={(v) => setForm({ ...form, name: v })}
+          value={form.service_name}
+          onChange={(v) => setForm({ ...form, service_name: v })}
         />
         <Input
           label="Price"
@@ -262,8 +261,8 @@ function ServiceRow({ service }) {
         <div className="sm:col-span-3">
           <Input
             label="Description"
-            value={form.desc}
-            onChange={(v) => setForm({ ...form, desc: v })}
+            value={form.details}
+            onChange={(v) => setForm({ ...form, details: v })}
           />
         </div>
       </div>
@@ -286,7 +285,7 @@ function ServiceRow({ service }) {
         <button
           onClick={async () => {
             try {
-              await deleteService(service._id);
+              await deleteService.mutateAsync(service._id);
               toast.success("Service removed.");
             } catch (e) {
               toast.error(e.message);
@@ -342,7 +341,7 @@ function SlotsPanel({ slots }) {
                 try {
                   await updateTimeSlot.mutateAsync({
                     id: t._id,
-                    isactive: !t.isactive,
+                    data: { isactive: !t.isactive },
                   });
                   toast.success("Slot updated.");
                 } catch (e) {
@@ -407,7 +406,7 @@ function SlotsPanel({ slots }) {
 }
 
 function BookingsPanel({ bookings }) {
-  const updateBooking = useUpdateBooking();
+  const updateBooking = useUpdateBookingStatus();
 
   if (bookings.length === 0) {
     return (
@@ -426,20 +425,20 @@ function BookingsPanel({ bookings }) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="font-semibold">
-                {b.service.name}{" "}
+                {b.service_Id.service_name}{" "}
                 <span className="text-xs font-normal text-muted-foreground">
                   #{b._id}
                 </span>
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {b.address.name} · {b.address?.phone} · {b.address?.car}
+                {b.user_Id.name} · {b.user_Id.mobileno}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {b.slot} · {b.address?.line}, {b.address?.city}
+                {b.time} · {b.address}
               </p>
             </div>
             <p className="font-display text-lg font-semibold">
-              {b.service?.price}
+              {b.service_Id?.price}
             </p>
           </div>
 
@@ -448,7 +447,8 @@ function BookingsPanel({ bookings }) {
               value={b.status}
               onChange={async (e) => {
                 try {
-                  await updateBooking.mutateAsync(b._id, {
+                  await updateBooking.mutateAsync({
+                    id: b._id,
                     status: e.target.value,
                   });
                 } catch (error) {
@@ -485,7 +485,7 @@ function Input({ label, value, onChange, placeholder }) {
 
 Input.propTypes = {
   label: propTypes.string,
-  value: propTypes.string,
+  value: propTypes.oneOfType([propTypes.string, propTypes.number]),
   onChange: propTypes.func,
   placeholder: propTypes.string,
 };
@@ -500,18 +500,12 @@ BookingsPanel.propTypes = {
   bookings: propTypes.arrayOf(
     propTypes.shape({
       _id: propTypes.string.isRequired,
-      service: propTypes.shape({
-        name: propTypes.string.isRequired,
-        price: propTypes.string.isRequired,
+      service_Id: propTypes.shape({
+        service_name: propTypes.string.isRequired,
+        price: propTypes.number.isRequired,
       }).isRequired,
-      address: propTypes.shape({
-        name: propTypes.string.isRequired,
-        phone: propTypes.string.isRequired,
-        car: propTypes.string.isRequired,
-        line: propTypes.string.isRequired,
-        city: propTypes.string.isRequired,
-      }).isRequired,
-      slot: propTypes.string.isRequired,
+      address: propTypes.string.isRequired,
+      time: propTypes.string.isRequired,
       status: propTypes.oneOf(["scheduled", "in_progress", "completed"])
         .isRequired,
       agentEmail: propTypes.string,
@@ -530,20 +524,20 @@ SlotsPanel.propTypes = {
 ServiceRow.propTypes = {
   service: propTypes.shape({
     _id: propTypes.string.isRequired,
-    name: propTypes.string.isRequired,
-    price: propTypes.string.isRequired,
+    service_name: propTypes.string.isRequired,
+    price: propTypes.number.isRequired,
     time: propTypes.string,
-    desc: propTypes.string,
+    details: propTypes.string,
   }).isRequired,
 };
 ServicesPanel.propTypes = {
   services: propTypes.arrayOf(
     propTypes.shape({
       _id: propTypes.string.isRequired,
-      name: propTypes.string.isRequired,
-      price: propTypes.string.isRequired,
+      service_name: propTypes.string.isRequired,
+      price: propTypes.number.isRequired,
       time: propTypes.string,
-      desc: propTypes.string,
+      details: propTypes.string,
     }),
   ).isRequired,
 };

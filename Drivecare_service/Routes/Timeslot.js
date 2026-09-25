@@ -14,7 +14,7 @@ Router.route("/").post(createTImeslot, isAdmin).get(get_all_Timeslots, isAdmin);
 
 Router.route("/active").get(get_active_Timeslots);
 Router.route("/:id")
-  .put(update_timeslot, isAdmin)
+  .patch(update_timeslot, isAdmin)
   .delete(delete_timeslot, isAdmin);
 
 module.exports = Router;
