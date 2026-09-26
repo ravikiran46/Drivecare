@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const GeoPointSchema = new mongoose.Schema(
+  {
+    type: { type: String, enum: ["Point"], default: "Point" },
+    coordinates: { type: [Number], default: [0, 0] }, // [lng, lat]
+  },
+  { _id: false },
+);
 const bookingSchema = new mongoose.Schema(
   {
     user_Id: {
@@ -12,8 +19,12 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
     address: {
-      type: String,
-      required: true,
+      name: String,
+      phone: String,
+      line: String,
+      city: String,
+      car: String,
+      location: GeoPointSchema,
     },
     service_Id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -31,12 +42,18 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["scheduled", "in_progress", "completed", "cancelled"],
+      enum: ["scheduled", "assigned", "in_progress", "completed", "cancelled"],
       default: "scheduled",
     },
     agent_Id: {
-      type: String,
-      // ref: "agent",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "agent",
+      default: null,
+      index: true,
+    },
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
       default: null,
     },
     total_price: {

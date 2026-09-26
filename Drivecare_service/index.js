@@ -13,7 +13,7 @@ const bookingRouter = require("./Routes/Booking");
 const timeslotRouter = require("./Routes/Timeslot");
 
 // middlewares
-const { verify } = require("./middlewares/authentication");
+const { verify, isAgent, isAdmin } = require("./middlewares/authentication");
 const errorhandler = require("./middlewares/errorHandler");
 
 const app = express();
@@ -23,7 +23,7 @@ dotenv.config();
 
 // middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "12mb" })); // base64 images can be large, so we increase the limit;
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -43,6 +43,10 @@ app.use("/address", verify, addressRouter);
 app.use("/booking", verify, bookingRouter);
 
 app.use("/timeslot", verify, timeslotRouter);
+
+app.use("/agent", verify, isAgent, require("./Routes/Agent"));
+
+app.use("/job", verify, isAdmin, require("./Routes/Jobs"));
 
 // local run  setup
 

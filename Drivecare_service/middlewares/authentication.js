@@ -36,4 +36,12 @@ const isUser = async (req, res, next) => {
   next();
 };
 
-module.exports = { verify, isAdmin, isUser };
+const isAgent = async (req, res, next) => {
+  const role = req.user.role;
+  if (role !== "agent") {
+    return res.status(403).json({ msg: "UnAuthorized!" });
+  }
+  next();
+};
+
+module.exports = { verify, isAdmin, isUser, isAgent };

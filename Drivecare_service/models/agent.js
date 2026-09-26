@@ -1,33 +1,30 @@
 const mongoose = require("mongoose");
 
-const agentSchema = mongoose.Schema(
+const agentSchema = new mongoose.Schema(
   {
-    details: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
-    },
-    isavailable: {
-      type: Boolean,
+      ref: "User",
       required: true,
+      unique: true,
+      index: true,
     },
-    work: [
-      {
-        service: {
-          type: String,
-        },
-        location: {
-          type: String,
-        },
-        vehicle_no: {
-          type: String,
-        },
-        info: {
-          type: String,
-        },
-      },
-    ],
+    isAvailable: { type: Boolean, default: true, index: true },
+    status: {
+      type: String,
+      enum: ["pending", "active", "inactive", "suspended"],
+      default: "pending",
+      index: true,
+    },
+    currentJob: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
+      default: null,
+    },
   },
   { timestamps: true },
 );
+
+agentSchema.index({ isAvailable: 1, status: 1 });
 
 module.exports = mongoose.model("agent", agentSchema);
